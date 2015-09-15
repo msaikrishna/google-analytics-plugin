@@ -23,6 +23,7 @@ public class UniversalAnalyticsPlugin extends CordovaPlugin {
     public static final String ADD_DIMENSION = "addCustomDimension";
     public static final String ADD_TRANSACTION = "addTransaction";
     public static final String ADD_TRANSACTION_ITEM = "addTransactionItem";
+    public static final String TRACK_UNCAUGHTEXCEPTION = "trackUncaughtExceptions";
 
     public static final String SET_USER_ID = "setUserId";
     public static final String DEBUG_MODE = "debugMode";
@@ -102,6 +103,8 @@ public class UniversalAnalyticsPlugin extends CordovaPlugin {
             this.setUserId(userId, callbackContext);
         } else if (DEBUG_MODE.equals(action)) {
             this.debugMode(callbackContext);
+        }   else if (TRACK_UNCAUGHTEXCEPTION.equals(action)) {
+            this.trackUncaughtExceptions(callbackContext);
         }
         return false;
     }
@@ -290,5 +293,12 @@ public class UniversalAnalyticsPlugin extends CordovaPlugin {
 
         tracker.set("&uid", userId);
         callbackContext.success("Set user id" + userId);
+    }
+    
+    private void trackUncaughtExceptions(CallbackContext callbackContext) {
+        UncaughtExceptionHandler exceptionHandler = new ExceptionReporter(this.tracker,Thread.getDefaultUncaughtExceptionHandler(),this.cordova.getActivity().getApplicationContext());
+        Thread.setDefaultUncaughtExceptionHandler(exceptionHandler);
+        callbackContext.success("trackUncaughtExceptions enabled");
+        Log.d("GAtrackUE","Tracking UnCaughtExceptions");
     }
 }
